@@ -11,13 +11,16 @@ namespace AutoLogger {
 			List<object> foundClasses = new List<object>();
 
 			foreach (Assembly assembly in assembliesToSearch) {
-				var loggableAttributeInfo = assembly.CustomAttributes
-					.Where(x => x.AttributeType == typeof(LoggableAttribute))
-					.Single();
+				foreach (TypeInfo typeInfo in assembly.DefinedTypes) {
+					var foundAttributes = typeInfo.CustomAttributes.Where(x => x.AttributeType == typeof(LoggableAttribute));
+					foundClasses.AddRange(foundAttributes);
+				}
 
-				foundClasses.AddRange(
-					assembly.DefinedTypes.Where(x => x.CustomAttributes.Contains(loggableAttributeInfo))
-				);
+				foreach (Type type in assembly.ExportedTypes) {
+					TypeInfo typeInfo = type.GetTypeInfo();
+					var foundAttributes = typeInfo.CustomAttributes.Where(x => x.AttributeType == typeof(LoggableAttribute));
+					foundClasses.AddRange(foundAttributes);
+				}
 			}
 
 			return foundClasses;
