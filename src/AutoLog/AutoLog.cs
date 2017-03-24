@@ -7,23 +7,28 @@ namespace AutoLogger {
 
 	public static class AutoLog {
 
-		internal static IList<object> LocateLoggableClasses(IList<Assembly> assembliesToSearch) {
-			List<object> foundClasses = new List<object>();
+		internal static IList<Type> LocateLoggableClasses(IList<Assembly> assembliesToSearch) {
+			List<Type> foundClasses = new List<Type>();
 
 			foreach (Assembly assembly in assembliesToSearch) {
-				foreach (TypeInfo typeInfo in assembly.DefinedTypes) {
-					var foundAttributes = typeInfo.CustomAttributes.Where(x => x.AttributeType == typeof(LoggableAttribute));
-					foundClasses.AddRange(foundAttributes);
-				}
+				var typeInfoList = assembly.DefinedTypes
+					.Where(typeInfo => {
+						var foundItems = typeInfo.CustomAttributes
+							.Where(a => a.AttributeType == typeof(LoggableAttribute));
 
-				foreach (Type type in assembly.ExportedTypes) {
-					TypeInfo typeInfo = type.GetTypeInfo();
-					var foundAttributes = typeInfo.CustomAttributes.Where(x => x.AttributeType == typeof(LoggableAttribute));
-					foundClasses.AddRange(foundAttributes);
-				}
+						return foundItems.Count() > 0;
+					})
+					.Select(y => y);
+
+				foundClasses.AddRange(typeInfoList.Select(x => x.AsType()));
 			}
 
 			return foundClasses;
+		}
+
+		//TODO(Logan) -> Implement this method to find the methods based on attribute property.
+		internal static IList<MethodInfo> LocateLoggableMethods(IList<Type> loggableClasses) {
+			return new List<MethodInfo>();
 		}
 		
 	}
