@@ -27,8 +27,17 @@ namespace AutoLogger {
 		}
 
 		//TODO(Logan) -> Implement this method to find the methods based on attribute property.
-		internal static IList<MethodInfo> LocateLoggableMethods(IList<Type> loggableClasses) {
-			return new List<MethodInfo>();
+		internal static IList<MethodInfo> LocateLoggableMethods(IList<Type> loggableClasses, LoggableItem items) {
+			IList<MethodInfo> loggableMethods = new List<MethodInfo>();
+			bool getPublicMethods = (items & LoggableItem.PublicMethods) != 0;
+
+			foreach (Type loggableClass in loggableClasses) {
+				loggableMethods = loggableClass.GetRuntimeMethods()
+					.Where(x => x.IsPublic && getPublicMethods)
+					.ToList();
+			}
+
+			return loggableMethods;
 		}
 		
 	}

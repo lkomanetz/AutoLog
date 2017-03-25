@@ -6,7 +6,9 @@ namespace AutoLogger {
         AttributeTargets.Class
     )]
     public class LoggableAttribute : System.Attribute {
+
         public LoggableItem LoggableItems { get; set; }
+
     }
 
 }

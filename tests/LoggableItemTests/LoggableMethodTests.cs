@@ -10,10 +10,21 @@ namespace LoggableItemTests {
 
 		[Fact]
 		public void PublicMethodsFound() {
-			IList<Type> loggableClasses = AutoLog.LocateLoggableClasses(null);
-			IList<MethodInfo> foundMethods = AutoLog.LocateLoggableMethods(loggableClasses);
+			LoggableItem item = LoggableItem.PublicMethods;
+			// IList<Type> loggableClasses = AutoLog.LocateLoggableClasses(null);
+			// IList<MethodInfo> foundMethods = AutoLog.LocateLoggableMethods(loggableClasses, item);
 		}
 
 	}
 
+	/*
+    [Loggable(LoggableItems = LoggableItem.PublicMethods | LoggableItem.PrivateMethods)]
+    public class LoggableClassWithAttribute {
+
+        public void PublicMethod() { }
+        private void PrivateMethod() { }
+
+    }
+
+	*/
 }

@@ -1,6 +1,9 @@
 using AutoLogger;
 using System;
 using Xunit;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace LoggableItemTests {
     public class LoggableItemTests {
@@ -35,14 +38,23 @@ namespace LoggableItemTests {
             );
         }
 
-        //TODO(Logan) -> Write unit test that gets the classes and loggable information;
+        //TODO(Logan) -> Refactor the code
         [Fact]
         public void LoggableAttributeHasItems() {
+            IList<Assembly> assemblies = new List<Assembly>() {
+                typeof(LoggableItemTests).GetTypeInfo().Assembly
+            };
 
+            LoggableItem items = LoggableItem.PublicMethods | LoggableItem.PrivateMethods;
+            Type loggableClass = AutoLog.LocateLoggableClasses(assemblies)[0];
+            var attribute = (LoggableAttribute)loggableClass.GetTypeInfo().GetCustomAttribute(typeof(LoggableAttribute));
+            Assert.True(
+                (attribute.LoggableItems & items) != 0
+            );
         }
 
     }
 
     [Loggable(LoggableItems = LoggableItem.PublicMethods | LoggableItem.PrivateMethods)]
-    public class LoggableClassWithAttribute {}
+    public class LoggableClassWithAttribute { }
 }
