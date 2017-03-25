@@ -1,3 +1,4 @@
+using AutoLogger.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,8 @@ namespace AutoLogger {
 
 	public static class AutoLog {
 
-		internal static IList<Type> LocateLoggableClasses(IList<Assembly> assembliesToSearch) {
-			List<Type> foundClasses = new List<Type>();
+		internal static IList<LoggableClass> LocateLoggableClasses(IList<Assembly> assembliesToSearch) {
+			List<LoggableClass> foundClasses = new List<LoggableClass>();
 
 			foreach (Assembly assembly in assembliesToSearch) {
 				var typeInfoList = assembly.DefinedTypes
@@ -19,8 +20,7 @@ namespace AutoLogger {
 						return foundItems.Count() > 0;
 					})
 					.Select(y => y);
-
-				foundClasses.AddRange(typeInfoList.Select(x => x.AsType()));
+				foundClasses.AddRange(CreateLoggableClasses(typeInfoList));
 			}
 
 			return foundClasses;
@@ -38,6 +38,21 @@ namespace AutoLogger {
 			}
 
 			return loggableMethods;
+		}
+
+		private static IList<LoggableClass> CreateLoggableClasses(IEnumerable<TypeInfo> typeInfos) {
+			IList<LoggableClass> loggableClasses = new List<LoggableClass>();
+			foreach (TypeInfo typeInfo in typeInfos) {
+				LoggableClass loggableClass = new LoggableClass() {
+					ClassType = typeInfo.AsType()
+				};
+				var attribute = (LoggableAttribute)typeInfo.GetCustomAttribute(typeof(LoggableAttribute));
+				loggableClass.LoggableItems = attribute.LoggableItems;
+
+				loggableClasses.Add(loggableClass);
+			}
+
+			return loggableClasses;
 		}
 		
 	}

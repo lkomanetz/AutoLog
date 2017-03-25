@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoLogger.Contracts;
 
 namespace AutoLogger {
 

@@ -1,4 +1,4 @@
-using AutoLogger;
+using AutoLogger.Contracts;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
