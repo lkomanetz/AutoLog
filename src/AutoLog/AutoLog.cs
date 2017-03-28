@@ -10,19 +10,6 @@ namespace AutoLogger {
 
 		internal static IList<LoggableClass> LocateLoggableClasses(IList<Assembly> assembliesToSearch) {
 			List<LoggableClass> foundClasses = new List<LoggableClass>();
-
-			foreach (Assembly assembly in assembliesToSearch) {
-				var typeInfoList = assembly.DefinedTypes
-					.Where(typeInfo => {
-						var foundItems = typeInfo.CustomAttributes
-							.Where(a => a.AttributeType == typeof(LoggableAttribute));
-
-						return foundItems.Count() > 0;
-					})
-					.Select(y => y);
-				foundClasses.AddRange(CreateLoggableClasses(typeInfoList));
-			}
-
 			return foundClasses;
 		}
 
@@ -38,21 +25,6 @@ namespace AutoLogger {
 			}
 
 			return loggableMethods;
-		}
-
-		private static IList<LoggableClass> CreateLoggableClasses(IEnumerable<TypeInfo> typeInfos) {
-			IList<LoggableClass> loggableClasses = new List<LoggableClass>();
-			foreach (TypeInfo typeInfo in typeInfos) {
-				LoggableClass loggableClass = new LoggableClass() {
-					ClassType = typeInfo.AsType()
-				};
-				var attribute = (LoggableAttribute)typeInfo.GetCustomAttribute(typeof(LoggableAttribute));
-				loggableClass.LoggableItems = attribute.LoggableItems;
-
-				loggableClasses.Add(loggableClass);
-			}
-
-			return loggableClasses;
 		}
 		
 	}

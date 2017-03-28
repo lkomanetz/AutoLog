@@ -20,11 +20,10 @@ namespace ClassFinderTests {
             };
             int expectedCount = classNames.Count;
 
-            IList<Assembly> assembliesToSearch = new List<Assembly>() {
-                typeof(ClassFinderTests).GetTypeInfo().Assembly
-            };
+            Assembly thisAssembly = typeof(ClassFinderTests).GetTypeInfo().Assembly;
+            LoggableClassFinder finder = new LoggableClassFinder(thisAssembly);
 
-            IList<LoggableClass> loggableClasses = AutoLog.LocateLoggableClasses(assembliesToSearch);
+            IList<LoggableClass> loggableClasses = finder.FindLoggableClasses();
             Assert.True(
                 loggableClasses.Count == expectedCount,
                 $"Expected Count: {expectedCount}\nActual: {loggableClasses.Count}"
