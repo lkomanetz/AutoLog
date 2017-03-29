@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
-using static System.Console;
 
 namespace ClassFinderTests {
+    using static System.Console;
 
     public class ClassFinderTests {
 
@@ -19,6 +19,7 @@ namespace ClassFinderTests {
                 "NestedProtectedClass"
             };
             int expectedCount = classNames.Count;
+            int expectedMethodCount = 1;
 
             Assembly thisAssembly = typeof(ClassFinderTests).GetTypeInfo().Assembly;
             LoggableClassFinder finder = new LoggableClassFinder(thisAssembly);
@@ -32,22 +33,34 @@ namespace ClassFinderTests {
             foreach (LoggableClass foundClass in loggableClasses) {
                 WriteLine($"Asserting type '{foundClass.Name}' is found.");
                 Assert.True(classNames.Contains(foundClass.Name), $"Type '{foundClass.Name}' not found");
+                Assert.True(
+                    foundClass.Methods.Count == expectedMethodCount,
+                    $"Found '{foundClass.Methods.Count}' methods.\t Expected {expectedMethodCount}"
+                );
             }
         }
 
     }
 
     [Loggable]
-    public class PublicClass {}
+    public class PublicClass {
+        [Log] public void PublicMethod() {}
+    }
 
     [Loggable]
-    internal class InternalClass {}
+    internal class InternalClass {
+        [Log] private void PrivateMethod() {}
+    }
 
     public class NestedClasses {
         [Loggable]
-        private class NestedPrivateClass {}
+        private class NestedPrivateClass {
+            [Log] internal void InternalMethod() {}
+        }
 
         [Loggable]
-        protected class NestedProtectedClass {}
+        protected class NestedProtectedClass {
+            [Log] protected void ProtectedMethod() {}
+        }
     }
 }

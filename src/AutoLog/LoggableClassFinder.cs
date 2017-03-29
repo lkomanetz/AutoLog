@@ -23,16 +23,12 @@ namespace AutoLogger {
 			foreach (Assembly assembly in _assembliesToSearch) {
 				var typeInfoList = assembly.DefinedTypes
 					.Where(t => {
-						var foundItems = t.CustomAttributes
-							.Where(a => a.AttributeType == typeof(LoggableAttribute));
-
-						return foundItems.Count() > 0;
+						return t.CustomAttributes.Where(a => a.AttributeType == typeof(LoggableAttribute)).Count() > 0;
 					})
 					.Select(typeInfo => typeInfo);
 
 				foundClasses.AddRange(CreateLoggableClasses(typeInfoList));
 			}
-
 			return foundClasses;
 		}
 
@@ -44,11 +40,19 @@ namespace AutoLogger {
 				};
 
 				var attribute = (LoggableAttribute)typeInfo.GetCustomAttribute(typeof(LoggableAttribute));
-				loggableClass.LoggableItems = attribute.LoggableItems;
+				loggableClass.Methods = FindLoggableMethods(typeInfo);
 				loggableClasses.Add(loggableClass);
 			}
 
 			return loggableClasses;
+		}
+
+		private IList<MethodInfo> FindLoggableMethods(TypeInfo typeInfo) {
+			return typeInfo.AsType().GetRuntimeMethods()
+				.Where(t => {
+					return t.CustomAttributes.Where(c => c.AttributeType == typeof(LogAttribute)).Count() > 0;
+				})
+				.ToList();
 		}
 
 	}
