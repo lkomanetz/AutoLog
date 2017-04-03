@@ -2,8 +2,11 @@ using System;
 
 namespace AutoLogger {
 
-	[AttributeUsageAttribute(AttributeTargets.Method)]
-	public class LogAttribute : System.Attribute
-	{ }
+	public class LogAttribute : BehaviorAttribute {
+
+		public override void Invoke(object[] args) {
+		}
+
+	}
 
 }

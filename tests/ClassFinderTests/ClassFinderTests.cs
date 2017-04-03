@@ -42,23 +42,19 @@ namespace ClassFinderTests {
 
     }
 
-    [Loggable]
     public class PublicClass {
         [Log] public void PublicMethod() {}
     }
 
-    [Loggable]
     internal class InternalClass {
         [Log] private void PrivateMethod() {}
     }
 
     public class NestedClasses {
-        [Loggable]
         private class NestedPrivateClass {
             [Log] internal void InternalMethod() {}
         }
 
-        [Loggable]
         protected class NestedProtectedClass {
             [Log] protected void ProtectedMethod() {}
         }

@@ -6,7 +6,7 @@ using AutoLogger.Contracts;
 
 namespace AutoLogger {
 
-	public class LoggableClassFinder {
+	internal class LoggableClassFinder {
 		private readonly IList<Assembly> _assembliesToSearch;
 
 		public LoggableClassFinder(IList<Assembly> assembliesToSearch) {
@@ -21,38 +21,35 @@ namespace AutoLogger {
 			List<LoggableClass> foundClasses = new List<LoggableClass>();
 
 			foreach (Assembly assembly in _assembliesToSearch) {
-				var typeInfoList = assembly.DefinedTypes
-					.Where(t => {
-						return t.CustomAttributes.Where(a => a.AttributeType == typeof(LoggableAttribute)).Count() > 0;
-					})
-					.Select(typeInfo => typeInfo);
+				IList<LoggableClass> loggableClasses = CreateLoggableClasses(assembly.DefinedTypes);
 
-				foundClasses.AddRange(CreateLoggableClasses(typeInfoList));
+				if (loggableClasses.Count > 0)
+					foundClasses.AddRange(CreateLoggableClasses(assembly.DefinedTypes));
 			}
+
 			return foundClasses;
 		}
 
 		private IList<LoggableClass> CreateLoggableClasses(IEnumerable<TypeInfo> typeInfoCollection) {
 			IList<LoggableClass> loggableClasses = new List<LoggableClass>();
+
 			foreach (TypeInfo typeInfo in typeInfoCollection) {
+				var foundMethods = typeInfo.DeclaredMethods
+					.Where(x => x.GetCustomAttributes().Where(a => a is BehaviorAttribute).Count() > 0)
+					.ToList();
+
+				if (foundMethods.Count < 1)
+					continue;
+
 				LoggableClass loggableClass = new LoggableClass() {
 					ClassType = typeInfo.AsType()
 				};
 
-				var attribute = (LoggableAttribute)typeInfo.GetCustomAttribute(typeof(LoggableAttribute));
-				loggableClass.Methods = FindLoggableMethods(typeInfo);
+				loggableClass.Methods = foundMethods;
 				loggableClasses.Add(loggableClass);
 			}
 
 			return loggableClasses;
-		}
-
-		private IList<MethodInfo> FindLoggableMethods(TypeInfo typeInfo) {
-			return typeInfo.AsType().GetRuntimeMethods()
-				.Where(t => {
-					return t.CustomAttributes.Where(c => c.AttributeType == typeof(LogAttribute)).Count() > 0;
-				})
-				.ToList();
 		}
 
 	}
