@@ -11,6 +11,10 @@ namespace AutoLogger {
 
 		public Type TypeToProxy => _typeToProxy;
 
+		public T Generate() {
+			return default(T);
+		}
+
 	}
 
 }

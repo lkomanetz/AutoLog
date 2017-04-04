@@ -6,23 +6,35 @@ namespace ProxyGeneratorTests {
 
     public class ProxyGeneratorTests {
 
-        private ProxyGenerator<TestClass> generator;
+        private ProxyGenerator<ITestInterface> _generator;
 
         public ProxyGeneratorTests() {
-            generator = new ProxyGenerator<TestClass>();
+            _generator = new ProxyGenerator<ITestInterface>();
         }
 
         [Fact]
         public void ProxyGeneratorCtorWorks() {
            Assert.True(
-               generator.TypeToProxy.Name == typeof(TestClass).Name
+               _generator.TypeToProxy.Name == typeof(ITestInterface).Name
            );
+        }
+
+        [Fact]
+        public void ProxyGeneratorCreatesInstanceDynamically() {
+            var instance = _generator.Generate();
+            Assert.NotNull(instance);
         }
 
     }
 
-    internal class TestClass {
+    internal interface ITestInterface {
+        void DoSomething();
+    }
 
+    internal class TestClass : ITestInterface {
+        public void DoSomething() {
+            Console.WriteLine("I did something...");
+        }
     }
 
 }
