@@ -7,21 +7,58 @@ namespace AutoLogger {
 
 	public class DependencyContainer {
 
-		private Dictionary<Type, Type> _someDictionary;
+		private readonly Dictionary<Type, Func<object>> _dependencyMap;
 
 		public DependencyContainer() {
+			_dependencyMap = new Dictionary<Type, Func<object>>();
 		}
 
-		public void Register<TKey, TConcrete>() {
-			Type concrete;
-			if (!_someDictionary.TryGetValue(typeof(TKey), out concrete)) {
+		public void Register<TKey, TConcrete>() where TConcrete : TKey {
+			_dependencyMap[typeof(TKey)] = () => ResolveByType(typeof(TConcrete));
+		}
 
+		public void Register<T>(T instance) {
+			_dependencyMap[typeof(T)] = () => instance;
+		}
+
+		public TKey Resolve<TKey>() {
+			return (TKey)Resolve(typeof(TKey));
+		}
+
+		public object Resolve(Type t) {
+			if (_dependencyMap.TryGetValue(t, out var provider)) {
+				return provider.Invoke();
 			}
-			_someDictionary.Add(typeof(TKey), typeof(TConcrete));
+
+			return ResolveByType(t);
 		}
 
-		public object Resolve<TKey>() {
-			throw new NotImplementedException();
+		private object ResolveByType(Type type) {
+			ConstructorInfo ctor = GetConstructorInfoFor(type);
+			if (ctor == null) {
+				return null;
+			}
+			
+			var parameters = ctor.GetParameters()
+				.Select(p => Resolve(p.ParameterType))
+				.ToArray();
+
+			return ctor.Invoke(parameters);
+		}
+
+		private ConstructorInfo GetConstructorInfoFor(Type type) {
+			int constructorCount = type.GetTypeInfo().DeclaredConstructors.Count();
+			ConstructorInfo ctor = null;
+
+			if (constructorCount > 1) {
+				ctor = type.GetTypeInfo().DeclaredConstructors
+					.Aggregate((cA, cB) => cA.GetParameters().Length > cB.GetParameters().Length ? cA : cB);
+			}
+			else {
+				ctor = type.GetTypeInfo().DeclaredConstructors.SingleOrDefault();
+			}
+
+			return ctor;
 		}
 
 	}
