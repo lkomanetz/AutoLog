@@ -5,11 +5,11 @@ using System.Reflection;
 
 namespace AutoLogger {
 
-	public class DependencyContainer {
+	public class DependencyMap {
 
 		private readonly Dictionary<Type, Func<object>> _dependencyMap;
 
-		public DependencyContainer() {
+		public DependencyMap() {
 			_dependencyMap = new Dictionary<Type, Func<object>>();
 		}
 

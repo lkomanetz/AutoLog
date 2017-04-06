@@ -2,13 +2,13 @@ using AutoLogger;
 using System;
 using Xunit;
 
-namespace DependencyContainerTests {
+namespace DependencyMapTests {
 
-    public class DependencyContainerTests {
+    public class DependencyMapTests {
 
         [Fact]
         public void DependencyResolutionSucceeds() {
-            DependencyContainer injector = new DependencyContainer();
+            DependencyMap injector = new DependencyMap();
             injector.Register<ITestInterface, TestClass>();
             object actualClass = injector.Resolve(typeof(ITestInterface));
             AssertResolution(actualClass, typeof(TestClass));
