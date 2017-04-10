@@ -10,11 +10,16 @@ namespace DependencyMapTests {
         public void DependencyResolutionSucceeds() {
             DependencyMap injector = new DependencyMap();
             injector.Register<ITestInterface, TestClass>();
+            injector.Register(typeof(AnotherClass));
             object actualClass = injector.Resolve(typeof(ITestInterface));
+            object anotherClass = injector.Resolve(typeof(AnotherClass));
             AssertResolution(actualClass, typeof(TestClass));
+            AssertResolution(anotherClass, typeof(AnotherClass));
 
             actualClass = injector.Resolve<ITestInterface>();
+            anotherClass = injector.Resolve<AnotherClass>();
             AssertResolution(actualClass, typeof(TestClass));
+            AssertResolution(anotherClass, typeof(AnotherClass));
         }
 
         [Fact]
