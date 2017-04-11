@@ -1,3 +1,4 @@
+using LoggableClasses;
 using AutoLogger;
 using AutoLogger.Contracts;
 using System;
@@ -21,7 +22,7 @@ namespace ClassFinderTests {
             int expectedCount = classNames.Count;
             int expectedMethodCount = 1;
 
-            Assembly thisAssembly = typeof(ClassFinderTests).GetTypeInfo().Assembly;
+            Assembly thisAssembly = typeof(PublicClass).GetTypeInfo().Assembly;
             LoggableClassFinder finder = new LoggableClassFinder(thisAssembly);
 
             IList<LoggableClass> loggableClasses = finder.FindLoggableClasses();
@@ -42,21 +43,4 @@ namespace ClassFinderTests {
 
     }
 
-    public class PublicClass {
-        [Log] public void PublicMethod() {}
-    }
-
-    internal class InternalClass {
-        [Log] private void PrivateMethod() {}
-    }
-
-    public class NestedClasses {
-        private class NestedPrivateClass {
-            [Log] internal void InternalMethod() {}
-        }
-
-        protected class NestedProtectedClass {
-            [Log] protected void ProtectedMethod() {}
-        }
-    }
 }

@@ -11,7 +11,7 @@ namespace AutoLogger {
 				this.Methods = new List<MethodInfo>();
 			}
 
-			public Type ClassType { get; set; }
+			public Type ClassType { get; set; } 
 			public IList<MethodInfo> Methods { get; set; }
 			public string Name => ClassType.Name;
 

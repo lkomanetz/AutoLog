@@ -5,5 +5,6 @@ using System.Runtime.InteropServices;
 // that are marked with the 'internal' access modifier.
 [assembly: InternalsVisibleTo("ClassFinderTests")]
 [assembly: InternalsVisibleTo("LoggableItemTests")]
+[assembly: InternalsVisibleTo("ClassBuilderTests")]
 
 [assembly: ComVisibleAttribute(false)]
