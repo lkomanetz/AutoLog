@@ -4,6 +4,7 @@ using AutoLogger;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using Xunit;
 
 namespace ClassBuilderTests {
@@ -20,8 +21,14 @@ namespace ClassBuilderTests {
         [Fact]
         public void ClassBuilderGeneratesCorrectOpCodes() {
             ClassBuilder cb = new ClassBuilder();
-            cb.Build(_loggableClasses[0]);
+            MethodInfo method = _loggableClasses[0].Methods[0];
+            IList<OpCode> opCodes = cb.GenerateOpCodes(method);
+            Assert.NotNull(opCodes);
             //TODO(Logan) -> Get back into the red with red/green/refactor
+        }
+
+        [Fact]
+        public void OperationCodesGenerateCorrectly() {
         }
 
     }
